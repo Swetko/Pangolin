@@ -4,6 +4,18 @@ target_sources( ${COMPONENT}
 PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/src/vars.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/varstate.cpp
+    
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/var/var.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/var/varextra.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/var/varvalue.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/var/varvaluet.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/var/varinit.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/var/varvaluegeneric.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/var/varwrapper.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/var/varstate.h
+
+    CMakeLists.txt
+
 )
 
 target_link_libraries(${COMPONENT} PUBLIC pango_core)

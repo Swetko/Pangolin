@@ -3,6 +3,10 @@ get_filename_component(COMPONENT ${CMAKE_CURRENT_LIST_DIR} NAME)
 target_sources( ${COMPONENT}
 PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/src/glgeometry.cpp
+
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/geometry/glgeometry.h
+    CMakeLists.txt
+
 )
 
 target_link_libraries(${COMPONENT} pango_geometry pango_opengl)

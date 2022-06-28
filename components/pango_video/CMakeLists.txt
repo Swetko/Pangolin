@@ -26,6 +26,57 @@ PRIVATE
     ${DRIVER_DIR}/json.cpp
     ${DRIVER_DIR}/thread.cpp
     ${DRIVER_DIR}/mjpeg.cpp
+    
+    
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/video_record_repeat.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/video_input.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/video_interface.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/video.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/video_output.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/stream_info.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/video_help.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/video_exception.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/iostream_operators.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/video_output_interface.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/truncate.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/uvc_mediafoundation.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/shared_memory.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/pango.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/thread.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/shift.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/split.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/transform.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/openni2.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/gamma.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/teli.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/pango_video_output.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/ffmpeg_convert.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/ffmpeg_output.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/images_out.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/ffmpeg_common.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/debayer.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/realsense.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/images.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/merge.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/pleora.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/deinterlace.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/mjpeg.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/openni.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/depthsense.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/v4l.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/pack.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/test.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/realsense2.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/firewire.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/join.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/uvc.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/openni_common.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/unpack.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/drivers/ffmpeg.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/video/stream_encoder_factory.h
+
+    CMakeLists.txt
+
 )
 
 PangolinRegisterFactory(

@@ -54,4 +54,63 @@ void SaveJsonFile(const std::string& filename, const string &prefix)
     VarState::I().SaveToFile(filename, VarState::FileKind::json);
 }
 
+
+template<typename T>
+Var<T>::Var( const std::shared_ptr<VarValueGeneric>& v )
+        : var(InitialiseFromPreviouslyTypedVar<T>(v))
+{
 }
+
+template<typename T>
+Var<T>::Var( const T& value, const VarMeta& meta )
+        : var(InitialiseFromPreviouslyTypedVar<T>(VarState::I().GetOrCreateVar<T>(value, meta)))
+{
+}
+
+#define PANGO_VAR_TYPES(x)                               \
+    x(bool) x(int8_t) x(uint8_t) x(int16_t) x(uint16_t)  \
+    x(int32_t) x(uint32_t) x(int64_t) x(uint64_t)        \
+    x(float) x(double)                                   \
+    x(std::string)                                       \
+    x(std::function<void()>)                             \
+
+#define X(type) template class Var<type>;
+PANGO_VAR_TYPES(X)
+#undef X
+
+#undef PANGO_VAR_TYPES
+
+}
+
+/*// StringAdapter.h
+template<typename T>
+class StringAdapter
+{
+     public:
+         StringAdapter(T* data);
+         void doAdapterStuff();
+     private:
+         std::basic_string<T> m_data;
+};
+typedef StringAdapter<char>    StrAdapter;
+typedef StringAdapter<wchar_t> WStrAdapter;
+Source:
+
+// StringAdapter.cpp
+#include "StringAdapter.h"
+
+template<typename T>
+StringAdapter<T>::StringAdapter(T* data)
+    :m_data(data)
+{}
+
+template<typename T>
+void StringAdapter<T>::doAdapterStuff()
+{
+}
+
+// Explicitly instantiate only the classes you want to be defined.
+// In this case I only want the template to work with characters but
+// I want to support both char and wchar_t with the same code.
+template class StringAdapter<char>;
+template class StringAdapter<wchar_t>;*/

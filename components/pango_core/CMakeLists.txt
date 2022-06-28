@@ -21,6 +21,58 @@ PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/src/param_set.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/factory/factory_registry.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/factory/factory_help.cpp
+    
+    ${CMAKE_CURRENT_LIST_DIR}/include/sigslot/signal.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/dynalo/dynalo.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/dynalo/symbol_helper.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/dynalo/detail/macos/dynalo.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/dynalo/detail/config.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/dynalo/detail/linux/dynalo.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/dynalo/detail/windows/dynalo.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/compat/glutbitmap.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/compat/type_traits.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/platform.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/pangolin.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/factory/factory.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/factory/factory_registry.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/factory/factory_help.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/range.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/posix/shared_memory_buffer.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/posix/semaphore.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/posix/condition_variable.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/sigstate.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/param_set.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/memstreambuf.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/format_string.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/params.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/parse.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/simple_math.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/transform.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/threadedfilebuf.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/file_extension.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/assert.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/log.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/argagg.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/true_false_toggle.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/variadic_all.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/file_utils.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/uri.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/fix_size_buffer_queue.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/xml/rapidxml_utils.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/xml/rapidxml_iterators.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/xml/rapidxml_print.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/xml/rapidxml.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/timer.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/avx_math.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/picojson.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/is_streamable.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/type_convert.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/compontent_cast.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/signal_slot.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/utils/bitmask.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/NaturalSort/natural_sort.hpp
+    
+    CMakeLists.txt
 )
 
 if (UNIX)

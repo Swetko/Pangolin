@@ -28,6 +28,8 @@
 #pragma once
 
 #include <pangolin/display/view.h>
+#include <pangolin/display/display.h>
+//#include <pangolin/display/pangolin_gl.h>
 #include <pangolin/var/var.h>
 #include <pangolin/handler/handler.h>
 #include <pangolin/gl/glfont.h>
@@ -37,23 +39,62 @@
 namespace pangolin
 {
 
+struct WidgetColorScheme
+  {
+  GLfloat s1[4] = {0.2f, 0.2f, 0.2f, 1.0f};
+  GLfloat s2[4] = {0.6f, 0.6f, 0.6f, 1.0f};
+  GLfloat s3[4] = {0.8f, 0.8f, 0.8f, 1.0f};
+  GLfloat bg[4] = {0.9f, 0.9f, 0.9f, 1.0f};
+  GLfloat fg[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+  GLfloat tx[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+  GLfloat dn[4] = {1.0f, 0.7f, 0.7f, 1.0f};
+  };
+
+inline const WidgetColorScheme default_color_scheme;
+
 PANGOLIN_EXPORT
 View& CreatePanel(const std::string& name);
 
-struct PANGOLIN_EXPORT Panel : public View
+PANGOLIN_EXPORT
+void DrawTextWindowCoords(GlText& text, GLfloat x, GLfloat y, GLfloat z = 0.0);
+
+
+PANGOLIN_EXPORT void glLine(GLfloat vs[4]);
+PANGOLIN_EXPORT void glRect(const Viewport& v);
+PANGOLIN_EXPORT void glRect(const Viewport& v, int inset);
+
+PANGOLIN_EXPORT void DrawShadowRect(const Viewport& v);
+PANGOLIN_EXPORT void DrawShadowRect(const Viewport& v, bool pushed);
+
+
+struct PANGOLIN_EXPORT Panel : public View, Handler
 {
-    Panel();
+    //Panel();
     Panel(const std::string& auto_register_var_prefix);
     void Render();
     void ResizeChildren();
-
-private:
+    
+    std::pair<int,int> GetMinimumSize() const;
+    
+protected:
+    sigslot::scoped_connection var_added_connection;
+    std::string auto_register_var_prefix;
+    
     void NewVarCallback(const VarState::Event& e);
     void AddVariable(const std::string& name, const std::shared_ptr<VarValueGeneric> &var);
     void RemoveVariable(const std::string& name);
-
-    sigslot::scoped_connection var_added_connection;
-    std::string auto_register_var_prefix;
+    
+    // Visuals
+    static constexpr int panel_v_margin = 6;
+    static constexpr int panel_scroll_rate = 32;
+    
+    // Handler
+    void Mouse(View&, MouseButton button, int x, int y, bool pressed, int button_state);
+    void Special(View&, InputSpecial inType, float x, float y, float p1, float p2, float p3, float p4, int button_state);
+    
+    float actual_scroll_offset=0;
+    int target_scroll_offset=0;
+    int total_children_height=0;
 };
 
 template<typename T>
@@ -63,6 +104,12 @@ struct Widget : public View, Handler, Var<T>
         : Var<T>(tv), title(title)
     {
         handler = this;
+    }
+    
+    std::pair<int,int> GetMinimumSize() const
+    {
+        PANGO_ASSERT(bottom.unit==Unit::ReversePixel && "Widget needs to override GetMinimumSize.");
+        return {-1,std::abs((int)bottom.p)};
     }
     
     std::string title;

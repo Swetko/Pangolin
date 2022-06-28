@@ -100,6 +100,20 @@ PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/src/image_io_zstd.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/image_io_libraw.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/image_io_tiff.cpp
+    
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/image/image_io.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/image/typed_image.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/image/image_utils.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/image/shared_image.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/image/pixel_format.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/image/managed_image.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/image/image.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/image/image_convert.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/image/memcpy.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/image/copy.h
+
+    CMakeLists.txt
+
 )
 
 target_link_libraries(${COMPONENT} PUBLIC pango_core)

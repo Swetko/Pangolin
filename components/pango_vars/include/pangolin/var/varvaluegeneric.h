@@ -38,6 +38,8 @@ constexpr int META_FLAG_NONE      = 0x0000;
 constexpr int META_FLAG_TOGGLE    = 0x0001;
 constexpr int META_FLAG_READONLY  = 0x0002;
 
+struct View;
+
 struct VarMeta
 {
     VarMeta(
@@ -81,6 +83,7 @@ struct VarMeta
     bool gui_changed;
     bool logscale;
     bool generic;
+    View* associated_widget;
 };
 
 // Forward declaration

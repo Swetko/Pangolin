@@ -38,8 +38,6 @@
 namespace pangolin
 {
 
-const int panal_v_margin = 6;
-
 int AttachAbs( int low, int high, Attach a)
 {
     if( a.unit == Pixel ) return low + (int)a.p;
@@ -54,6 +52,11 @@ double AspectAreaWithinTarget(double target, double test)
     else
         return target / test;
 }
+
+std::pair<int,int> View::GetMinimumSize() const
+  {
+  return {-1,-1};
+  }
 
 void View::Resize(const Viewport& p)
 {
@@ -121,40 +124,34 @@ inline int zcompare(const View* lhs, const View* rhs)
 
 void View::ResizeChildren()
 {
+    constexpr int margin = 8;
+    
     if( layout == LayoutOverlay )
     {
         // Sort children into z-order
         std::sort(views.begin(), views.end(), zcompare);
 
-        for(std::vector<View*>::iterator iv = views.begin(); iv != views.end(); ++iv ) {
-            (*iv)->Resize(v);
+        for(auto& iv : views) {
+            iv->Resize(v);
         }
     }else if( layout == LayoutVertical )
     {
         // Allocate space incrementally
-        Viewport space = v.Inset(panal_v_margin);
-        int num_children = 0;
-        for(std::vector<View*>::iterator iv = views.begin(); iv != views.end(); ++iv )
+        Viewport space = v.Inset(margin);
+        for(auto& iv : views)
         {
-            if (!(*iv)->show) continue;
-            num_children++;
-            if(scroll_offset >= num_children ) {
-                (*iv)->scroll_show = false;
-            }else{
-                (*iv)->scroll_show = true;
-                (*iv)->Resize(space);
-                space.h = (*iv)->v.b - panal_v_margin - space.b;
-            }
+            if (!iv->show) continue;
+            iv->Resize(space);
+            space.h = iv->v.b - margin - space.b;
         }
     }else if(layout == LayoutHorizontal )
     {
         // Allocate space incrementally
-        const int margin = 8;
         Viewport space = v.Inset(margin);
-        for(std::vector<View*>::iterator iv = views.begin(); iv != views.end(); ++iv )
+        for(auto& iv : views)
         {
-            (*iv)->Resize(space);
-            space.w = (*iv)->v.l + margin + space.l;
+            iv->Resize(space);
+            space.w = iv->v.l + margin + space.l;
         }
     }else if(layout == LayoutEqualVertical )
     {
@@ -236,7 +233,7 @@ void View::ResizeChildren()
 
 void View::Render()
 {
-    if(extern_draw_function && show && scroll_show) {
+    if(extern_draw_function && show) {
         extern_draw_function(*this);
     }
     RenderChildren();
@@ -246,7 +243,7 @@ void View::RenderChildren()
 {
     for(std::vector<View*>::iterator iv = views.begin(); iv != views.end(); ++iv )
     {
-        if((*iv)->show && (*iv)->scroll_show) (*iv)->Render();
+        if((*iv)->show) (*iv)->Render();
     }
 }
 

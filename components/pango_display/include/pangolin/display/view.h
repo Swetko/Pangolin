@@ -64,7 +64,7 @@ struct PANGOLIN_EXPORT View
 {
     View(double aspect=0.0)
         : aspect(aspect), top(1.0),left(0.0),right(1.0),bottom(0.0), hlock(LockCenter),vlock(LockCenter),
-          layout(LayoutOverlay), scroll_offset(0), show(1), zorder(0), handler(0), scroll_show(1) {}
+          layout(LayoutOverlay), scroll_offset(0), show(1), zorder(0), handler(0) {}
     
     virtual ~View() {}
     
@@ -102,6 +102,9 @@ struct PANGOLIN_EXPORT View
     //! Obtain object space coordinates of scene at pixel (winx, winy, winzdepth)
     //! winzdepth can be obtained from GetClosestDepth
     void GetObjectCoordinates(const OpenGlRenderState& cam_state, double winx, double winy, double winzdepth, GLdouble& x, GLdouble& y, GLdouble& z) const;
+    
+    //! Obtain minimum viewport sizes to be allocated (w,h), -1 means don't care
+    virtual std::pair<int,int> GetMinimumSize() const;
     
     //! Given the specification of Display, compute viewport
     virtual void Resize(const Viewport& parent);
@@ -199,7 +202,10 @@ struct PANGOLIN_EXPORT View
     
     // Should this view be displayed?
     bool show;
-
+    
+    // Active state (deactivated views do not receive input)
+    bool active=true;
+    
     // Child views are rendered in order of low to high z-order
     // Views default to 0 z-order
     int zorder;
@@ -224,8 +230,6 @@ struct PANGOLIN_EXPORT View
 private:
     // Private copy constructor
     View(View&) { /* Do Not copy - take reference instead*/ }
-    
-    bool scroll_show;
 };
 
 }

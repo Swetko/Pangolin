@@ -10,12 +10,39 @@ PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/src/gldraw.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/glfont.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/gltext.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/glsl.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/glpangoglu.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/gltexturecache.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/viewport.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/opengl_render_state.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/stb_truetype.h
     ${CMAKE_CURRENT_BINARY_DIR}/fonts.cpp
+    
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/glfont.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/glinclude.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/compat/gl_es_compat.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/compat/gl2engine.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/gldraw.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/glsl.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/glchar.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/opengl_render_state.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/glplatform.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/viewport.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/glpixformat.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/gltext.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/glvbo.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/gl.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/colour.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/cg.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/glpangoglu.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/gltexturecache.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/glstate.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/gl.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/glcuda.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/gl/glformattraits.h
+
+    ${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt
+
 )
 
 find_package (Eigen3 REQUIRED QUIET)

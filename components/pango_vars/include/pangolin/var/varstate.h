@@ -204,8 +204,10 @@ std::shared_ptr<VarValueGeneric> VarState::GetOrCreateVar(
             // upgrade from untyped 'generic' type now we have first typed reference
             AddUpgradedVar(InitialiseFromPreviouslyGenericVar<T>(it->second), it);
         }
-    }else{
+    }else if(meta.full_name!=""){
         it = AddVar(std::make_shared<VarValue<T>>( value, meta ) );
+    }else{
+        return std::make_shared<VarValue<T>>( value, meta );
     }
 
     return it->second;

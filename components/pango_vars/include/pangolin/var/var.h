@@ -74,15 +74,9 @@ public:
     {
     }
 
-    Var( const std::shared_ptr<VarValueGeneric>& v )
-        : var(InitialiseFromPreviouslyTypedVar<T>(v))
-    {
-    }
-
-    Var( const T& value, const VarMeta& meta )
-        : var(InitialiseFromPreviouslyTypedVar<T>(VarState::I().GetOrCreateVar<T>(value, meta)))
-    {
-    }
+    Var( const std::shared_ptr<VarValueGeneric>& v );
+    
+    Var( const T& value, const VarMeta& meta );
 
     Var( const std::string& name, const T& value = T() )
         : Var(value, VarMeta(name))
@@ -156,7 +150,12 @@ public:
     {
         return var;
     }
-
+    
+    View* GetWidget()
+    {
+        return Meta().associated_widget;
+    }
+    
     // Holds reference to stored variable object
     // N.B. mutable because it is a cached value and Get() is advertised as const.
     mutable std::shared_ptr<VarValueT<T>> var;
@@ -168,5 +167,6 @@ inline std::ostream& operator<<(std::ostream& s, Var<T>& rhs)
     s << rhs.operator const T &();
     return s;
 }
+
 
 }

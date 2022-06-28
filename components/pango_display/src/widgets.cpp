@@ -44,19 +44,14 @@ using namespace std;
 
 namespace pangolin
 {
+static const auto& colour=default_color_scheme;
 
-const static GLfloat colour_s1[4] = {0.2f, 0.2f, 0.2f, 1.0f};
-const static GLfloat colour_s2[4] = {0.6f, 0.6f, 0.6f, 1.0f};
-const static GLfloat colour_bg[4] = {0.9f, 0.9f, 0.9f, 1.0f};
-const static GLfloat colour_fg[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-const static GLfloat colour_tx[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-const static GLfloat colour_dn[4] = {1.0f, 0.7f, 0.7f, 1.0f};
 
 // TODO: It doesn't look like this is doing anything meaningful right now...
 std::mutex display_mutex;
 
 // Render at (x,y) in window coordinates.
-inline void DrawWindow(GlText& text, GLfloat x, GLfloat y, GLfloat z = 0.0)
+void DrawTextWindowCoords(GlText& text, GLfloat x, GLfloat y, GLfloat z)
 {
     // Backup viewport
     GLint    view[4];
@@ -112,12 +107,12 @@ void glLine(GLfloat vs[4])
     glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-void glRect(Viewport v)
+void glRect(const Viewport& v)
 {
-    GLfloat vs[] = { (float)v.l,(float)v.b,
-                     (float)v.l,(float)v.t(),
-                     (float)v.r(),(float)v.t(),
-                     (float)v.r(),(float)v.b };
+    GLfloat vs[] = { (float)v.l  -0.5f,(float)v.b  -0.5f,
+                     (float)v.l  -0.5f,(float)v.t()-0.5f,
+                     (float)v.r()-0.5f,(float)v.t()-0.5f,
+                     (float)v.r()-0.5f,(float)v.b  -0.5f};
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(2, GL_FLOAT, 0, vs);
@@ -125,26 +120,26 @@ void glRect(Viewport v)
     glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-void glRect(Viewport v, int inset)
+void glRect(const Viewport& v, int inset)
 {
     glRect(v.Inset(inset));
 }
 
-void DrawShadowRect(Viewport& v)
+void DrawShadowRect(const Viewport& v)
 {
-    glColor4fv(colour_s2);
-    glDrawRectPerimeter((GLfloat)v.l, (GLfloat)v.b, (GLfloat)v.r(), (GLfloat)v.t());
+    glColor4fv(colour.s2);
+    glDrawRectPerimeter((GLfloat)v.l, (GLfloat)v.b, (GLfloat)(v.r()-1), (GLfloat)(v.t()-1));
 }
 
-void DrawShadowRect(Viewport& v, bool pushed)
+void DrawShadowRect(const Viewport& v, bool pushed)
 {
-    const GLfloat* c1 = pushed ? colour_s1 : colour_s2;
-    const GLfloat* c2 = pushed ? colour_s2 : colour_s1;
+    const GLfloat* c1 = pushed ? colour.s1 : colour.s2;
+    const GLfloat* c2 = pushed ? colour.s2 : colour.s1;
 
     GLfloat vs[] = { (float)v.l,(float)v.b,
-                     (float)v.l,(float)v.t(),
-                     (float)v.r(),(float)v.t(),
-                     (float)v.r(),(float)v.b,
+                     (float)v.l,(float)(v.t()-1),
+                     (float)(v.r()-1),(float)(v.t()-1),
+                     (float)(v.r()-1),(float)v.b,
                      (float)v.l,(float)v.b };
 
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -158,23 +153,18 @@ void DrawShadowRect(Viewport& v, bool pushed)
 
 }
 
-Panel::Panel()
-{
-    handler = &StaticHandlerScroll;
-    layout = LayoutVertical;
-}
-
 Panel::Panel(const std::string& auto_register_var_prefix)
     : auto_register_var_prefix(auto_register_var_prefix)
 {
-    handler = &StaticHandlerScroll;
+    handler = this;
     layout = LayoutVertical;
 
     // Register for notifications on var additions
-    var_added_connection = VarState::I().RegisterForVarEvents(
-        std::bind(&Panel::NewVarCallback,this,std::placeholders::_1),
-        true
-    );
+    if(auto_register_var_prefix!="")
+        var_added_connection = VarState::I().RegisterForVarEvents(
+            std::bind(&Panel::NewVarCallback,this,std::placeholders::_1),
+            true
+        );
 }
 
 void Panel::NewVarCallback(const VarState::Event& e)
@@ -228,6 +218,7 @@ void Panel::AddVariable(const std::string& name, const std::shared_ptr<VarValueG
         if(nv) {
             GetCurrentContext()->named_managed_views[name] = nv;
             views.push_back( nv );
+            var->Meta().associated_widget=nv;
             ResizeChildren();
         }
     }
@@ -254,6 +245,15 @@ void Panel::RemoveVariable(const std::string& name)
 
 void Panel::Render()
 {
+    if(actual_scroll_offset != (float)target_scroll_offset)
+    {
+        actual_scroll_offset += (target_scroll_offset - actual_scroll_offset)*0.15;
+        ResizeChildren();
+        if(std::abs(actual_scroll_offset - (float)target_scroll_offset) < 0.5f)
+            actual_scroll_offset = target_scroll_offset;
+    }
+    
+    
 #ifndef HAVE_GLES
     glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_DEPTH_BUFFER_BIT | GL_SCISSOR_BIT | GL_VIEWPORT_BIT | GL_COLOR_BUFFER_BIT | GL_TRANSFORM_BIT);
 #endif
@@ -268,10 +268,11 @@ void Panel::Render()
     glDisable( GL_COLOR_MATERIAL );
     glLineWidth(1.0);
 
-    glColor4fv(colour_bg);
+    glColor4fv(colour.bg);
     glRect(v);
-    DrawShadowRect(v);
-
+    DrawShadowRect(v.Inset(2));
+    
+    (v.Inset(panel_v_margin)).Scissor();
     RenderChildren();
 
 #ifndef HAVE_GLES
@@ -282,11 +283,63 @@ void Panel::Render()
 #endif
 }
 
+std::pair<int,int> Panel::GetMinimumSize() const
+  {
+  int total_height=0;
+  for(auto& iv : views) total_height += iv->GetMinimumSize().second + panel_v_margin;
+  if(views.size())total_height -= panel_v_margin;
+  total_height += 2*panel_v_margin;
+  return {-1,total_height};
+  }
+
+
 void Panel::ResizeChildren()
 {
-    View::ResizeChildren();
+    // Allocate space incrementally
+    Viewport space = v.Inset(panel_v_margin);
+    space.h+=(int)std::round(actual_scroll_offset);
+    total_children_height=0;
+    
+    for(auto& iv : views)
+    {
+        if (!iv->show) continue;
+        int child_height=iv->GetMinimumSize().second;
+        Viewport exact=space;
+        exact.b=space.b+space.h-child_height;
+        exact.h=child_height;
+        iv->Resize(exact);
+        
+        space.h = iv->v.b - panel_v_margin - space.b;
+        total_children_height += iv->v.h + panel_v_margin;
+    }
+    
+    if(views.size())total_children_height -= panel_v_margin;
 }
 
+void Panel::Mouse(View& d, MouseButton button, int x, int y, bool pressed, int button_state)
+{
+    if( pressed && (button == MouseWheelUp || button == MouseWheelDown) )
+    {
+        if( button == MouseWheelUp) target_scroll_offset   -= panel_scroll_rate;
+        if( button == MouseWheelDown) target_scroll_offset += panel_scroll_rate;
+        target_scroll_offset = std::max(0, std::min(target_scroll_offset, total_children_height - v.h + 2*panel_v_margin ));
+        ResizeChildren();
+    }else{
+        Handler::Mouse(d,button,x,y,pressed,button_state);
+    }
+}
+
+void Panel::Special(View& d, InputSpecial inType, float x, float y, float p1, float p2, float p3, float p4, int button_state)
+{
+    if( inType == InputSpecialScroll )
+    {
+        target_scroll_offset -= panel_scroll_rate*((int)(p2 / fabs(p2)));
+        target_scroll_offset = std::max(0, std::min(target_scroll_offset, total_children_height - v.h + 2*panel_v_margin ));
+        d.ResizeChildren();
+    }else{
+        Handler::Special(d,inType,x,y,p1,p2,p3,p4,button_state);
+    }
+}
 
 View& CreatePanel(const std::string& name)
 {
@@ -323,13 +376,13 @@ void Button::Mouse(View&, MouseButton button, int /*x*/, int /*y*/, bool pressed
 
 void Button::Render()
 {
-    glColor4fv(colour_fg );
+    glColor4fv(colour.fg );
     glRect(v);
-    glColor4fv(colour_tx);
+    glColor4fv(colour.tx);
     if(gltext.Text() != var->Meta().friendly) {
         gltext = default_font().Text(var->Meta().friendly);
     }
-    DrawWindow(gltext, raster[0],raster[1]-down);
+    DrawTextWindowCoords(gltext, raster[0],raster[1]-down);
     DrawShadowRect(v, down);
 }
 
@@ -363,13 +416,13 @@ void FunctionButton::Mouse(View&, MouseButton button, int /*x*/, int /*y*/, bool
 
 void FunctionButton::Render()
 {
-    glColor4fv(colour_fg);
+    glColor4fv(colour.fg);
     glRect(v);
-    glColor4fv(colour_tx);
+    glColor4fv(colour.tx);
     if(gltext.Text() != var->Meta().friendly) {
         gltext = default_font().Text(var->Meta().friendly);
     }
-    DrawWindow(gltext, raster[0],raster[1]-down);
+    DrawTextWindowCoords(gltext, raster[0],raster[1]-down);
     DrawShadowRect(v, down);
 }
 
@@ -413,14 +466,14 @@ void Checkbox::Render()
 
     if( val )
     {
-        glColor4fv(colour_dn);
+        glColor4fv(colour.dn);
         glRect(vcb);
     }
-    glColor4fv(colour_tx);
+    glColor4fv(colour.tx);
     if(gltext.Text() != var->Meta().friendly) {
         gltext = default_font().Text(var->Meta().friendly);
     }
-    DrawWindow(gltext, raster[0], raster[1]);
+    DrawTextWindowCoords(gltext, raster[0], raster[1]);
     DrawShadowRect(vcb, val);
 }
 
@@ -452,6 +505,7 @@ Slider::Slider(std::string title, const std::shared_ptr<VarValueGeneric> &tv)
 
 void Slider::Keyboard(View&, unsigned char key, int /*x*/, int /*y*/, bool pressed)
 {
+    if(!active)return;
     if( pressed && var->Meta().range[0] < var->Meta().range[1] )
     {
         double val = !logscale ? var->Get() : log(var->Get());
@@ -475,6 +529,7 @@ void Slider::Keyboard(View&, unsigned char key, int /*x*/, int /*y*/, bool press
 
 void Slider::Mouse(View& view, MouseButton button, int x, int y, bool pressed, int mouse_state)
 {
+    if(!active)return;
     if(pressed)
     {
         // Wheel
@@ -512,6 +567,7 @@ void Slider::Mouse(View& view, MouseButton button, int x, int y, bool pressed, i
 
 void Slider::MouseMotion(View&, int x, int /*y*/, int /*mouse_state*/)
 {
+    if(!active)return;
     if( var->Meta().range[0] != var->Meta().range[1] )
     {
         const double range = (var->Meta().range[1] - var->Meta().range[0]);
@@ -543,13 +599,13 @@ void Slider::MouseMotion(View&, int x, int /*y*/, int /*mouse_state*/)
 void Slider::ResizeChildren()
 {
     raster[0] = v.l + 2.0f;
-    raster[1] = v.b + (v.h-gltext.Height())/2.0f;
+    raster[1] = v.b + (v.h-default_font().Height())/2.0f;
 }
 
 void Slider::Render()
 {
     const double val = var->Get();
-
+ResizeChildren();
     if( var->Meta().range[0] != var->Meta().range[1] )
     {
         double rval = val;
@@ -557,26 +613,29 @@ void Slider::Render()
         {
             rval = log(val);
         }
-        glColor4fv(colour_fg);
+        
+        glColor4fv(active ? colour.fg : colour.bg);
         glRect(v);
-        glColor4fv(colour_dn);
+        glColor4fv(active ? colour.dn : colour.s3);
+        
         const double norm_val = max(0.0,min(1.0,(rval - var->Meta().range[0]) / (var->Meta().range[1] - var->Meta().range[0])));
         glRect(Viewport(v.l,v.b, (int)(v.w*norm_val),v.h));
         DrawShadowRect(v);
     }
 
-    glColor4fv(colour_tx);
+    glColor4fv(colour.tx);
     if(gltext.Text() != var->Meta().friendly) {
         gltext = default_font().Text(var->Meta().friendly);
     }
-    DrawWindow(gltext, raster[0], raster[1]);
+    //printf("%d %d\n",raster[0],raster[1]);
+    DrawTextWindowCoords(gltext, raster[0], raster[1]);
 
     std::ostringstream oss;
     oss << setprecision(4) << val;
     string str = oss.str();
     GlText glval = default_font().Text(str);
     const float l = glval.Width() + 2.0f;
-    DrawWindow(glval,  v.l + v.w - l, raster[1] );
+    DrawTextWindowCoords(glval,  v.l + v.w - l, raster[1] );
 }
 
 
@@ -756,7 +815,7 @@ void TextInput::Render()
 
     Viewport input_v(v.l,v.b,v.w,v.h / 2);
     
-    glColor4fv(colour_fg);
+    glColor4fv(colour.fg);
     if(can_edit) glRect(input_v);
 
     std::string edit_visible = edit.substr(edit_visible_part[0], edit_visible_part[1]);
@@ -769,18 +828,18 @@ void TextInput::Render()
     {
         const int tl = (int)(rl + default_font().Text(edit_visible.substr(0,sel[0] - edit_visible_part[0])).Width());
         const int tr = (int)(rl + default_font().Text(edit_visible.substr(0,sel[1] - edit_visible_part[0])).Width());
-        glColor4fv(colour_dn);
+        glColor4fv(colour.dn);
         glRect(Viewport(tl,input_v.b,tr-tl,input_v.h));
 
-        glColor4fv(colour_tx);
+        glColor4fv(colour.tx);
         GLfloat caret[4] = {(float) tr, (float) input_v.b, (float) tr, (float) input_v.b + input_v.h};
         glLine(caret);
     }
 
-    glColor4fv(colour_tx);
-    DrawWindow(gltext, v.l + horizontal_margin, v.b + gltext.Height() + 3.f * vertical_margin);
+    glColor4fv(colour.tx);
+    DrawTextWindowCoords(gltext, v.l + horizontal_margin, v.b + gltext.Height() + 3.f * vertical_margin);
 
-    DrawWindow(gledit, (GLfloat)(rl), input_v.b + vertical_margin);
+    DrawTextWindowCoords(gledit, (GLfloat)(rl), input_v.b + vertical_margin);
     if(can_edit) DrawShadowRect(input_v);
 }
 

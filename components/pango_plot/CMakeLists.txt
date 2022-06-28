@@ -5,6 +5,14 @@ PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/src/datalog.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/plotter.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/loaders/csv_table_loader.cpp
+    
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/plot/loaders/table_loader.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/plot/loaders/csv_table_loader.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/plot/plotter.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/pangolin/plot/datalog.h
+
+    CMakeLists.txt
+
 )
 
 target_link_libraries(${COMPONENT} pango_display)
