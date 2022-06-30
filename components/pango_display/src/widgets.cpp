@@ -243,17 +243,8 @@ void Panel::RemoveVariable(const std::string& name)
     display_mutex.unlock();
 }
 
-void Panel::Render()
+PrepareForWidgetDrawing::PrepareForWidgetDrawing()
 {
-    if(actual_scroll_offset != (float)target_scroll_offset)
-    {
-        actual_scroll_offset += (target_scroll_offset - actual_scroll_offset)*0.15;
-        ResizeChildren();
-        if(std::abs(actual_scroll_offset - (float)target_scroll_offset) < 0.5f)
-            actual_scroll_offset = target_scroll_offset;
-    }
-    
-    
 #ifndef HAVE_GLES
     glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_DEPTH_BUFFER_BIT | GL_SCISSOR_BIT | GL_VIEWPORT_BIT | GL_COLOR_BUFFER_BIT | GL_TRANSFORM_BIT);
 #endif
@@ -265,7 +256,32 @@ void Panel::Render()
     glDisable(GL_LIGHTING);
     glDisable(GL_SCISSOR_TEST);
     glDisable(GL_LINE_SMOOTH);
-    glDisable( GL_COLOR_MATERIAL );
+    glDisable(GL_COLOR_MATERIAL);
+}
+
+
+PrepareForWidgetDrawing::~PrepareForWidgetDrawing()
+{
+#ifndef HAVE_GLES
+    glPopAttrib();
+#else
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_DEPTH_TEST);
+#endif
+}
+
+void Panel::Render()
+{
+    if(actual_scroll_offset != (float)target_scroll_offset)
+    {
+        actual_scroll_offset += (target_scroll_offset - actual_scroll_offset)*0.15;
+        ResizeChildren();
+        if(std::abs(actual_scroll_offset - (float)target_scroll_offset) < 0.5f)
+            actual_scroll_offset = target_scroll_offset;
+    }
+    
+    PrepareForWidgetDrawing raii;
+    
     glLineWidth(1.0);
 
     glColor4fv(colour.bg);
@@ -274,13 +290,6 @@ void Panel::Render()
     
     (v.Inset(panel_v_margin)).Scissor();
     RenderChildren();
-
-#ifndef HAVE_GLES
-    glPopAttrib();
-#else
-    glEnable(GL_LINE_SMOOTH);
-    glEnable(GL_DEPTH_TEST);
-#endif
 }
 
 std::pair<int,int> Panel::GetMinimumSize() const

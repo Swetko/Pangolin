@@ -1,0 +1,5 @@
+module pango_core
+  {
+  header "pangolin/pangolin.h"
+  export *
+  }

@@ -48,6 +48,7 @@ struct WidgetColorScheme
   GLfloat fg[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   GLfloat tx[4] = {0.0f, 0.0f, 0.0f, 1.0f};
   GLfloat dn[4] = {1.0f, 0.7f, 0.7f, 1.0f};
+  GLfloat dm[4] = {1.0f, 0.8f, 0.8f, 1.0f};
   };
 
 inline const WidgetColorScheme default_color_scheme;
@@ -65,6 +66,13 @@ PANGOLIN_EXPORT void glRect(const Viewport& v, int inset);
 
 PANGOLIN_EXPORT void DrawShadowRect(const Viewport& v);
 PANGOLIN_EXPORT void DrawShadowRect(const Viewport& v, bool pushed);
+
+// RAII class to avoid code duplication
+struct PANGOLIN_EXPORT PrepareForWidgetDrawing
+{
+    PrepareForWidgetDrawing();
+    ~PrepareForWidgetDrawing();
+};
 
 
 struct PANGOLIN_EXPORT Panel : public View, Handler
