@@ -27,10 +27,12 @@ option( BUILD_ASAN "Enable AddressSanitizer for Debug builds" OFF )
 
 # Default build type (Override with cmake .. -DCMAKE_BUILD_TYPE=...)
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
+  set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build." FORCE)
   message(STATUS "Setting build type to '${CMAKE_BUILD_TYPE}' as none was specified.")
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
+
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
 
 if(_WIN_)
     option( BUILD_SHARED_LIBS    "Build Shared Library" OFF)
@@ -113,6 +115,14 @@ endforeach()
 foreach(component_cmake ${components_cmake})
     include(${component_cmake})
 endforeach()
+
+
+add_library(pango_all INTERFACE)
+foreach(component_name ${component_list})
+    message(${component_name})
+    target_link_libraries(pango_all INTERFACE ${component_name})
+endforeach()   
+list(APPEND component_list pango_all)
 
 #######################################################
 ## Build Tree Export

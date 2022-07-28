@@ -57,7 +57,7 @@ PANGOLIN_EXPORT
 View& CreatePanel(const std::string& name);
 
 PANGOLIN_EXPORT
-void DrawTextWindowCoords(GlText& text, GLfloat x, GLfloat y, GLfloat z = 0.0);
+void DrawTextWindowCoords(const GlText& text, GLfloat x, GLfloat y, GLfloat z = 0.0);
 
 
 PANGOLIN_EXPORT void glLine(GLfloat vs[4]);

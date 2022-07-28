@@ -51,7 +51,7 @@ static const auto& colour=default_color_scheme;
 std::mutex display_mutex;
 
 // Render at (x,y) in window coordinates.
-void DrawTextWindowCoords(GlText& text, GLfloat x, GLfloat y, GLfloat z)
+void DrawTextWindowCoords(const GlText& text, GLfloat x, GLfloat y, GLfloat z)
 {
     // Backup viewport
     GLint    view[4];
@@ -613,6 +613,7 @@ void Slider::ResizeChildren()
 
 void Slider::Render()
 {
+    PrepareForWidgetDrawing raii;
     const double val = var->Get();
 ResizeChildren();
     if( var->Meta().range[0] != var->Meta().range[1] )
