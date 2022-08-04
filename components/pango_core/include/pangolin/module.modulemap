@@ -1,5 +1,5 @@
 module pango_core
   {
-  header "pangolin/pangolin.h"
+  header "pangolin.h"
   export *
   }

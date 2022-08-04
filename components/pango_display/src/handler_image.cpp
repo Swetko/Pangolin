@@ -457,7 +457,7 @@ void ImageViewHandler::MouseMotion(View& view, int x, int y, int button_state)
         sel.y.max = hover_img[1];
     }else if(button_state == MouseButtonRight )
     {
-        Special(view, InputSpecialScroll, (float)x, (float)y, (float)d[0], (float)d[1], 0.0f, 0.0f, button_state);
+        Special(view, InputSpecialScroll, (float)x, (float)y, (float)d[0], (float)-d[1], 0.0f, 0.0f, button_state);
     }
 
     last_mouse_pos[0] = x;
