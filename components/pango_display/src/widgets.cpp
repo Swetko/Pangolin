@@ -286,7 +286,7 @@ void Panel::Render()
 
     glColor4fv(colour.bg);
     glRect(v);
-    DrawShadowRect(v.Inset(2));
+    DrawShadowRect(v.Inset(0));
     
     (v.Inset(panel_v_margin)).Scissor();
     RenderChildren();
