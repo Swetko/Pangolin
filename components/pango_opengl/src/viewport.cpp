@@ -56,6 +56,11 @@ void Viewport::DisableScissor()
     glDisable(GL_SCISSOR_TEST);
 }
 
+bool Viewport::IsEmpty() const
+{
+    return h<=0 || w<=0;
+}
+
 bool Viewport::Contains(int x, int y) const
 {
     return l <= x && x < (l+w) && b <= y && y < (b+h);

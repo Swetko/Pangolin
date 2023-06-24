@@ -254,7 +254,7 @@ PrepareForWidgetDrawing::PrepareForWidgetDrawing()
     DisplayBase().ActivatePixelOrthographic();
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
-    glDisable(GL_SCISSOR_TEST);
+    //glDisable(GL_SCISSOR_TEST);
     glDisable(GL_LINE_SMOOTH);
     glDisable(GL_COLOR_MATERIAL);
 }
@@ -615,7 +615,8 @@ void Slider::Render()
 {
     PrepareForWidgetDrawing raii;
     const double val = var->Get();
-ResizeChildren();
+    ResizeChildren();
+    
     if( var->Meta().range[0] != var->Meta().range[1] )
     {
         double rval = val;

@@ -45,6 +45,7 @@ struct PANGOLIN_EXPORT Viewport
     void Scissor() const;
     void ActivateAndScissor() const;
 
+    bool IsEmpty() const;
     bool Contains(int x, int y) const;
     
     Viewport Inset(int i) const;

@@ -241,9 +241,9 @@ void View::Render()
 
 void View::RenderChildren()
 {
-    for(std::vector<View*>::iterator iv = views.begin(); iv != views.end(); ++iv )
+    for(auto& iv : views)
     {
-        if((*iv)->show) (*iv)->Render();
+        if(iv->show && !(iv->vp.Intersect(vp)).IsEmpty()) iv->Render();
     }
 }
 
