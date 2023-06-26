@@ -47,7 +47,7 @@
 #include <string>
 #include <vector>
 
-#include <pangolin/compat/type_traits.h>
+//#include <pangolin/compat/type_traits.h>
 
 // Enable INT64 support
 #define PICOJSON_USE_INT64
@@ -67,14 +67,9 @@ extern "C" {
 }
 #endif
 
-// experimental support for int64_t (see README.mkdn for detail)
-#ifdef PICOJSON_USE_INT64
-# ifndef __STDC_FORMAT_MACROS
-#  define __STDC_FORMAT_MACROS
-# endif
-# include <errno.h>
-# include <inttypes.h>
-#endif // PICOJSON_USE_INT64
+
+#include <errno.h>
+#include <inttypes.h>
 
 // to disable the use of localeconv(3), set PICOJSON_USE_LOCALE to 0
 #ifndef PICOJSON_USE_LOCALE
@@ -88,7 +83,7 @@ extern "C" {
 #endif // PICOJSON_USE_LOCALE
 
 #ifndef PICOJSON_ASSERT
-# define PICOJSON_ASSERT(e) do { if (! (e)) throw std::runtime_error(#e); } while (0)
+# define PICOJSON_ASSERT(e) do { if (! (e)) __throw_exception_again std::runtime_error(#e); } while (0)
 #endif
 
 #ifdef _MSC_VER
@@ -113,15 +108,11 @@ enum {
     number_type,
     string_type,
     array_type,
-    object_type
-#ifdef PICOJSON_USE_INT64
-    , int64_type
-#endif
+    object_type,
+    int64_type
 };
 
-enum {
-    INDENT_WIDTH = 2
-};
+static constexpr int INDENT_WIDTH = 2;
 
 struct null {};
 
@@ -133,9 +124,7 @@ public:
     union _storage {
         bool boolean_;
         double number_;
-#ifdef PICOJSON_USE_INT64
         int64_t int64_;
-#endif
         std::string* string_;
         array* array_;
         object* object_;
@@ -162,7 +151,6 @@ public:
         u_.boolean_ = b;
     }
 
-#ifdef PICOJSON_USE_INT64
     value(short v) : type_(int64_type) {
         u_.int64_ = static_cast<int64_t>(v);
     }
@@ -187,35 +175,14 @@ public:
     value(unsigned long long v) : type_(int64_type) {
         u_.int64_ = static_cast<int64_t>(v);
     }
-#endif
 
     value(float n) : type_(number_type) {
-        if (
-            #ifdef _MSC_VER
-                ! _finite(n)
-            #elif __cplusplus>=201103L || !(defined(isnan) && defined(isinf))
-                std::isnan(n) || std::isinf(n)
-            #else
-                isnan(n) || isinf(n)
-            #endif
-                ) {
-            throw std::overflow_error("");
-        }
+        if (std::isnan(n) || std::isinf(n) ) { __throw_exception_again std::overflow_error(""); }
         u_.number_ = static_cast<double>(n);
     }
 
     value(double n) : type_(number_type) {
-        if (
-            #ifdef _MSC_VER
-                ! _finite(n)
-            #elif __cplusplus>=201103L || !(defined(isnan) && defined(isinf))
-                std::isnan(n) || std::isinf(n)
-            #else
-                isnan(n) || isinf(n)
-            #endif
-                ) {
-            throw std::overflow_error("");
-        }
+        if (std::isnan(n) || std::isinf(n) ) { __throw_exception_again std::overflow_error(""); }
         u_.number_ = n;
     }
 
@@ -270,8 +237,8 @@ public:
 private:
     template <typename T> value(const T*); // intentionally defined to block implicit conversion of pointer to bool
     template <typename Iter> static void _indent(Iter os, int indent);
-    template <typename Iter> void serialize_(Iter os, int indent) const;
-    std::string serialize_(int indent) const;
+    template <typename Iter> void _serialize(Iter os, int indent) const;
+    std::string _serialize(int indent) const;
 };
 
 typedef value::array array;
@@ -284,9 +251,7 @@ inline value::value(int type, bool) : type_(type) {
 #define INIT(p, v) case p##type: u_.p = v; break
     INIT(boolean_, false);
     INIT(number_, 0.0);
-#ifdef PICOJSON_USE_INT64
     INIT(int64_, 0);
-#endif
     INIT(string_, new std::string());
     INIT(array_, new array());
     INIT(object_, new object());
@@ -358,19 +323,13 @@ inline void value::swap(value& x) {
 }
 IS(null, null)
 IS(bool, boolean)
-#ifdef PICOJSON_USE_INT64
 IS(int64_t, int64)
-#endif
 IS(std::string, string)
 IS(array, array)
 IS(object, object)
 #undef IS
 template <> inline bool value::is<double>() const {
-    return type_ == number_type
-        #ifdef PICOJSON_USE_INT64
-            || type_ == int64_type
-        #endif
-            ;
+    return type_ == number_type || type_ == int64_type ;
 }
 
 #define GET(ctype, var)						\
@@ -388,12 +347,8 @@ GET(bool, u_.boolean_)
 GET(std::string, *u_.string_)
 GET(array, *u_.array_)
 GET(object, *u_.object_)
-#ifdef PICOJSON_USE_INT64
 GET(double, (type_ == int64_type && (const_cast<value*>(this)->type_ = number_type, const_cast<value*>(this)->u_.number_ = u_.int64_), u_.number_))
 GET(int64_t, u_.int64_)
-#else
-GET(double, u_.number_)
-#endif
 #undef GET
 
 inline bool value::evaluate_as_boolean() const {
@@ -494,13 +449,11 @@ inline std::string value::to_str() const {
     switch (type_) {
     case null_type:      return "null";
     case boolean_type:   return u_.boolean_ ? "true" : "false";
-#ifdef PICOJSON_USE_INT64
     case int64_type: {
         char buf[sizeof("-9223372036854775808")];
         SNPRINTF(buf, sizeof(buf), "%" PRId64, u_.int64_);
         return buf;
     }
-#endif
     case number_type:    {
         char buf[256];
         double tmp;
@@ -525,6 +478,7 @@ inline std::string value::to_str() const {
 #ifdef _MSC_VER
         __assume(0);
 #endif
+    //std::abort();
     }
 }
 
@@ -561,11 +515,11 @@ template <typename Iter> void serialize_str(const std::string& s, Iter oi) {
 }
 
 template <typename Iter> void value::serialize(Iter oi, bool prettify) const {
-    return serialize_(oi, prettify ? 0 : -1);
+    return _serialize(oi, prettify ? 0 : -1);
 }
 
 inline std::string value::serialize(bool prettify) const {
-    return serialize_(prettify ? 0 : -1);
+    return _serialize(prettify ? 0 : -1);
 }
 
 template <typename Iter> void value::_indent(Iter oi, int indent) {
@@ -575,7 +529,7 @@ template <typename Iter> void value::_indent(Iter oi, int indent) {
     }
 }
 
-template <typename Iter> void value::serialize_(Iter oi, int indent) const {
+template <typename Iter> void value::_serialize(Iter oi, int indent) const {
     switch (type_) {
     case string_type:
         serialize_str(*u_.string_, oi);
@@ -594,7 +548,7 @@ template <typename Iter> void value::serialize_(Iter oi, int indent) const {
             if (indent != -1) {
                 _indent(oi, indent);
             }
-            i->serialize_(oi, indent);
+            i->_serialize(oi, indent);
         }
         if (indent != -1) {
             --indent;
@@ -624,7 +578,7 @@ template <typename Iter> void value::serialize_(Iter oi, int indent) const {
             if (indent != -1) {
                 *oi++ = ' ';
             }
-            i->second.serialize_(oi, indent);
+            i->second._serialize(oi, indent);
         }
         if (indent != -1) {
             --indent;
@@ -644,9 +598,9 @@ template <typename Iter> void value::serialize_(Iter oi, int indent) const {
     }
 }
 
-inline std::string value::serialize_(int indent) const {
+inline std::string value::_serialize(int indent) const {
     std::string s;
-    serialize_(std::back_inserter(s), indent);
+    _serialize(std::back_inserter(s), indent);
     return s;
 }
 
@@ -901,7 +855,6 @@ template <typename Context, typename Iter> inline bool _parse(Context& ctx, inpu
             if (num_str.empty()) {
                 return false;
             }
-#ifdef PICOJSON_USE_INT64
             {
                 errno = 0;
                 intmax_t ival = strtoimax(num_str.c_str(), &endp, 10);
@@ -913,7 +866,6 @@ template <typename Context, typename Iter> inline bool _parse(Context& ctx, inpu
                     return true;
                 }
             }
-#endif
             f = strtod(num_str.c_str(), &endp);
             if (endp == num_str.c_str() + num_str.size()) {
                 ctx.set_number(f);
@@ -931,9 +883,7 @@ class deny_parse_context {
 public:
     bool set_null() { return false; }
     bool set_bool(bool) { return false; }
-#ifdef PICOJSON_USE_INT64
     bool set_int64(int64_t) { return false; }
-#endif
     bool set_number(double) { return false; }
     template <typename Iter> bool parse_string(input<Iter>&) { return false; }
     bool parse_array_start() { return false; }
@@ -960,12 +910,10 @@ public:
         *out_ = value(b);
         return true;
     }
-#ifdef PICOJSON_USE_INT64
     bool set_int64(int64_t i) {
         *out_ = value(i);
         return true;
     }
-#endif
     bool set_number(double f) {
         *out_ = value(f);
         return true;
@@ -1008,9 +956,7 @@ public:
     null_parse_context() {}
     bool set_null() { return true; }
     bool set_bool(bool) { return true; }
-#ifdef PICOJSON_USE_INT64
     bool set_int64(int64_t) { return true; }
-#endif
     bool set_number(double) { return true; }
     template <typename Iter> bool parse_string(input<Iter>& in) {
         dummy_str s;
@@ -1102,6 +1048,7 @@ inline bool operator==(const value& x, const value& y) {
 #ifdef _MSC_VER
     __assume(0);
 #endif
+  //std::abort();
 }
 
 inline bool operator!=(const value& x, const value& y) {
@@ -1229,11 +1176,9 @@ int main(void)
     TEST("\"\\u0061\\u30af\\u30ea\\u30b9\"", string,
          string("a\xe3\x82\xaf\xe3\x83\xaa\xe3\x82\xb9"), false);
     TEST("\"\\ud840\\udc0b\"", string, string("\xf0\xa0\x80\x8b"), false);
-#ifdef PICOJSON_USE_INT64
     TEST("0", int64_t, 0, true);
     TEST("-9223372036854775808", int64_t, std::numeric_limits<int64_t>::min(), true);
     TEST("9223372036854775807", int64_t, std::numeric_limits<int64_t>::max(), true);
-#endif // PICOJSON_USE_INT64
 
 #undef TEST
 
@@ -1387,8 +1332,6 @@ int main(void)
     } catch (std::runtime_error e) {
         ok(true, "get<wrong_type>() should raise an error");
     }
-
-#ifdef PICOJSON_USE_INT64
     {
         picojson::value v1((int64_t)123);
         ok(v1.is<int64_t>(), "is int64_t");
@@ -1406,7 +1349,6 @@ int main(void)
         ok(v1.is<double>(), "underflowing int is double");
         ok(v1.get<double>() + 9.22337203685478e+18 < 65536, "double value is somewhat correct");
     }
-#endif // PICOJSON_USE_INT64
 
     done_testing();
 
