@@ -49,7 +49,7 @@ namespace pangolin
 std::mutex window_mutex;
 std::weak_ptr<X11GlContext> global_gl_context;
 
-const long EVENT_MASKS = ButtonPressMask|ButtonReleaseMask|StructureNotifyMask|ButtonMotionMask|PointerMotionMask|KeyPressMask|KeyReleaseMask|FocusChangeMask;
+const long EVENT_MASKS = ButtonPressMask|ButtonReleaseMask|StructureNotifyMask|ButtonMotionMask|PointerMotionMask|KeyPressMask|KeyReleaseMask|FocusChangeMask|EnterWindowMask|LeaveWindowMask;
 
 #define GLX_CONTEXT_MAJOR_VERSION_ARB       0x2091
 #define GLX_CONTEXT_MINOR_VERSION_ARB       0x2092
@@ -403,6 +403,10 @@ void X11Window::ProcessEvents()
            });
            break;
         }
+        case LeaveNotify: printf("LeaveNotify %d %d\n",ev.xbutton.x, ev.xbutton.y);
+            break;
+        case EnterNotify: printf("EnterNotify %d %d\n",ev.xbutton.x, ev.xbutton.y);
+            break;
         case FocusOut:
             break;
         case MotionNotify:
