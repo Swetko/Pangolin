@@ -76,6 +76,11 @@ struct PANGOLIN_EXPORT MouseMotionEvent : public WindowInputEvent
 {
 };
 
+struct PANGOLIN_EXPORT MouseBoundaryEvent : public WindowInputEvent
+{
+    bool enter; // true: entering, false: leaving
+};
+
 struct PANGOLIN_EXPORT SpecialInputEvent : public WindowInputEvent
 {
     InputSpecial inType;
@@ -126,6 +131,7 @@ public:
     sigslot::signal<MouseEvent>    MouseSignal;
     sigslot::signal<MouseMotionEvent> MouseMotionSignal;
     sigslot::signal<MouseMotionEvent> PassiveMouseMotionSignal;
+    sigslot::signal<MouseBoundaryEvent> MouseBoundarySignal;
     sigslot::signal<SpecialInputEvent> SpecialInputSignal;
 };
 

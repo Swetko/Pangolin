@@ -383,7 +383,6 @@ void X11Window::ProcessEvents()
     {
         XNextEvent(display->display, &ev);
 
-
         switch(ev.type){
         case ConfigureNotify:
             ResizeSignal(WindowResizeEvent{ev.xconfigure.width, ev.xconfigure.height});
@@ -403,9 +402,12 @@ void X11Window::ProcessEvents()
            });
            break;
         }
-        case LeaveNotify: printf("LeaveNotify %d %d\n",ev.xbutton.x, ev.xbutton.y);
-            break;
-        case EnterNotify: printf("EnterNotify %d %d\n",ev.xbutton.x, ev.xbutton.y);
+        case EnterNotify:
+        case LeaveNotify:
+            MouseBoundarySignal(MouseBoundaryEvent{
+                (float)ev.xbutton.x, (float)ev.xbutton.y,
+                GetEventFlagsFromXState(ev.xkey.state), ev.type==EnterNotify
+            });
             break;
         case FocusOut:
             break;
@@ -413,7 +415,7 @@ void X11Window::ProcessEvents()
             if(ev.xmotion.state & (Button1Mask|Button2Mask|Button3Mask) ) {
                 MouseMotionSignal(MouseMotionEvent{
                     (float)ev.xbutton.x, (float)ev.xbutton.y,
-                    GetEventFlagsFromXState(ev.xkey.state),
+                    GetEventFlagsFromXState(ev.xkey.state)
                 });
             }else{
                 PassiveMouseMotionSignal(MouseMotionEvent{
@@ -451,12 +453,12 @@ void X11Window::ProcessEvents()
                 case XK_Home:      key = PANGO_SPECIAL + PANGO_KEY_HOME       ; break;
                 case XK_End:       key = PANGO_SPECIAL + PANGO_KEY_END        ; break;
                 case XK_Insert:    key = PANGO_SPECIAL + PANGO_KEY_INSERT     ; break;
-                case XK_Shift_L:
-                case XK_Shift_R:
-                case XK_Control_L:
-                case XK_Control_R:
-                case XK_Alt_L:
-                case XK_Alt_R:
+                case XK_Shift_L:   key = PANGO_SPECIAL + PANGO_KEY_SHIFT_L    ; break;
+                case XK_Shift_R:   key = PANGO_SPECIAL + PANGO_KEY_SHIFT_R    ; break;
+                case XK_Control_L: key = PANGO_SPECIAL + PANGO_KEY_CTRL_L     ; break;
+                case XK_Control_R: key = PANGO_SPECIAL + PANGO_KEY_CTRL_R     ; break;
+                case XK_Alt_L:     key = PANGO_SPECIAL + PANGO_KEY_ALT_L      ; break;
+                case XK_Alt_R:     key = PANGO_SPECIAL + PANGO_KEY_ALT_R      ; break;
                 case XK_Super_L:
                 case XK_Super_R:
                 default:

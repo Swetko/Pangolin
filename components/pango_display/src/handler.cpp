@@ -77,6 +77,11 @@ void Handler::PassiveMouseMotion(View& d, int x, int y, int button_state)
     }
 }
 
+void Handler::MouseBoundary(View& d, int x, int y, int button_state, bool enter)
+{
+    for(auto& v:d.views)if(v->handler)v->handler->MouseBoundary(*v,x,y,button_state,enter);
+}
+
 void Handler::Special(View& d, InputSpecial inType, float x, float y, float p1, float p2, float p3, float p4, int button_state)
 {
     View* child = d.FindChild( (int)x, (int)y);
@@ -85,31 +90,6 @@ void Handler::Special(View& d, InputSpecial inType, float x, float y, float p1, 
         GetCurrentContext()->activeDisplay = child;
         if( child->handler)
             child->handler->Special(*child,inType, x,y, p1, p2, p3, p4, button_state);
-    }
-}
-
-void HandlerScroll::Mouse(View& d, MouseButton button, int x, int y, bool pressed, int button_state)
-{
-    if( pressed && (button == MouseWheelUp || button == MouseWheelDown) )
-    {
-        if( button == MouseWheelUp) d.scroll_offset   -= 1;
-        if( button == MouseWheelDown) d.scroll_offset += 1;
-        d.scroll_offset = std::max(0, std::min(d.scroll_offset, (int)d.NumVisibleChildren()-1) );
-        d.ResizeChildren();
-    }else{
-        Handler::Mouse(d,button,x,y,pressed,button_state);
-    }
-}
-
-void HandlerScroll::Special(View& d, InputSpecial inType, float x, float y, float p1, float p2, float p3, float p4, int button_state)
-{
-    if( inType == InputSpecialScroll )
-    {
-        d.scroll_offset -= (int)(p2 / fabs(p2));
-        d.scroll_offset = std::max(0, std::min(d.scroll_offset, (int)d.NumVisibleChildren()-1) );
-        d.ResizeChildren();
-    }else{
-        Handler::Special(d,inType,x,y,p1,p2,p3,p4,button_state);
     }
 }
 

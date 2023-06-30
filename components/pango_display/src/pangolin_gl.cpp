@@ -33,7 +33,7 @@ namespace pangolin
 {
 
 PangolinGl::PangolinGl()
-    : user_app(0), quit(false), mouse_state(0),activeDisplay(0)
+    : user_app(0), quit(false), mouse_state(0), activeDisplay(0)
 {
 }
 

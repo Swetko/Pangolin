@@ -53,6 +53,9 @@ namespace process
   void PassiveMouseMotion(int x, int y, KeyModifierBitmask key_modifiers);
 
   PANGOLIN_EXPORT
+  void MouseBoundary(int x, int y, KeyModifierBitmask key_modifiers, bool enter);
+
+  PANGOLIN_EXPORT
   void SpecialInput(InputSpecial inType, float x, float y, float p1, float p2, float p3, float p4, KeyModifierBitmask key_modifiers);
 }
 

@@ -77,10 +77,11 @@ struct PANGOLIN_EXPORT PangolinGl
     
     // Global keypress hooks
     KeyhookMap keypress_hooks;
-    
+
     // State relating to interactivity
     bool quit;
     int mouse_state;
+
     View* activeDisplay;
     
     std::queue<std::pair<std::string,Viewport> > screen_capture;

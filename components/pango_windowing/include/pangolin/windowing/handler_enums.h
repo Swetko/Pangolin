@@ -62,6 +62,12 @@ const int PANGO_KEY_PAGE_DOWN = 105;
 const int PANGO_KEY_HOME      = 106;
 const int PANGO_KEY_END       = 107;
 const int PANGO_KEY_INSERT    = 108;
+const int PANGO_KEY_CTRL_L    = 110;
+const int PANGO_KEY_CTRL_R    = 111;
+const int PANGO_KEY_ALT_L     = 112;
+const int PANGO_KEY_ALT_R     = 113;
+const int PANGO_KEY_SHIFT_L   = 114;
+const int PANGO_KEY_SHIFT_R   = 115;
 
 enum MouseButton
 {

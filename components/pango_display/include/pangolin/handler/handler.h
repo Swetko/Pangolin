@@ -60,13 +60,8 @@ struct PANGOLIN_EXPORT Handler
     virtual void Mouse(View&, MouseButton button, int x, int y, bool pressed, int button_state);
     virtual void MouseMotion(View&, int x, int y, int button_state);
     virtual void PassiveMouseMotion(View&, int x, int y, int button_state);
+    virtual void MouseBoundary(View&, int x, int y, int button_state, bool enter);
     virtual void Special(View&, InputSpecial inType, float x, float y, float p1, float p2, float p3, float p4, int button_state);
-};
-
-struct PANGOLIN_EXPORT HandlerScroll : Handler
-{
-    void Mouse(View&, MouseButton button, int x, int y, bool pressed, int button_state);
-    void Special(View&, InputSpecial inType, float x, float y, float p1, float p2, float p3, float p4, int button_state);
 };
 
 struct PANGOLIN_EXPORT HandlerBase3D : Handler
@@ -134,6 +129,5 @@ using Handler3D = Handler3DBlitCopy;
 
 
 static Handler StaticHandler;
-static HandlerScroll StaticHandlerScroll;
 
 }

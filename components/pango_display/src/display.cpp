@@ -139,6 +139,9 @@ WindowInterface& CreateWindowAndBind(std::string window_title, int w, int h, con
     context->window->PassiveMouseMotionSignal.connect( [](MouseMotionEvent event){
         process::PassiveMouseMotion(event.x, event.y, event.key_modifiers);
     });
+    context->window->MouseBoundarySignal.connect( [](MouseBoundaryEvent event){
+        process::MouseBoundary(event.x, event.y, event.key_modifiers, event.enter);
+    });
     context->window->SpecialInputSignal.connect( [](SpecialInputEvent event){
         process::SpecialInput(event.inType, event.x, event.y, event.p[0], event.p[1], event.p[2], event.p[3], event.key_modifiers);
     });

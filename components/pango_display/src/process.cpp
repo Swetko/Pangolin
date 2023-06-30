@@ -137,6 +137,21 @@ void PassiveMouseMotion(int x, int y, KeyModifierBitmask key_modifiers)
     const int button_state = context->mouse_state | key_modifiers.mask();
     context->base.handler->PassiveMouseMotion(context->base,x,y,button_state);
 
+
+    last_x = (float)x;
+    last_y = (float)y;
+}
+
+void MouseBoundary(int x, int y, KeyModifierBitmask key_modifiers, bool enter)
+{
+    PangolinGl* context = GetCurrentContext();
+
+    // Force coords to match OpenGl Window Coords
+    y = context->base.v.h - y;
+
+    const int button_state = context->mouse_state | key_modifiers.mask();
+    context->base.handler->MouseBoundary(context->base,x,y,button_state,enter);
+
     last_x = (float)x;
     last_y = (float)y;
 }
